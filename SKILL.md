@@ -13,14 +13,27 @@ tags: openclaw, i18n, chinese, localization
 ## 使用方法
 
 ```bash
+# 升级 OpenClaw 并自动汉化（推荐）
+python3 scripts/upgrade-openclaw.py
+
+# 仅检查是否有更新
+python3 scripts/upgrade-openclaw.py --check
+
 # 查看将要进行的更改（预览模式）
 python3 scripts/translate-commands.py --dry-run
 
-# 执行翻译
+# 手动执行翻译
 python3 scripts/translate-commands.py
 
 # 从备份恢复原文件
 python3 scripts/translate-commands.py --restore
+```
+
+### 建议设置 alias
+
+```bash
+# 在 ~/.bashrc 或 ~/.zshrc 中添加
+alias openclaw-upgrade='python3 /path/to/openclaw-cmd-cn/scripts/upgrade-openclaw.py'
 ```
 
 ## 注意事项
