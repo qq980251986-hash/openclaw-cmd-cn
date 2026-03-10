@@ -1,0 +1,13 @@
+#!/bin/bash
+# OpenClaw 命令中文化 hook
+# 每次升级后自动运行翻译脚本
+
+SCRIPT_PATH="$HOME/.openclaw/workspace/skills/openclaw-cmd-cn/scripts/translate-commands.py"
+
+if [ -f "$SCRIPT_PATH" ]; then
+    echo "🔄 运行命令中文化..."
+    python3 "$SCRIPT_PATH"
+else
+    echo "⚠️  未找到翻译脚本: $SCRIPT_PATH"
+    echo "   安装: git clone https://github.com/qq980251986-hash/openclaw-cmd-cn ~/.openclaw/workspace/skills/openclaw-cmd-cn"
+fi
