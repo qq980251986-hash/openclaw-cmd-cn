@@ -77,6 +77,14 @@ TRANSLATIONS = {
     '"Dev profile: isolate state under ~/.openclaw-dev, default gateway port 19001, and shift derived ports (browser/canvas)"': '"开发配置：隔离状态到 ~/.openclaw-dev，默认网关端口 19001，并调整衍生端口（浏览器/画布）"',
     '"Global log level override for file + console (silent|fatal|error|warn|info|debug|trace)"': '"全局日志级别覆盖（silent|fatal|error|warn|info|debug|trace）"',
 
+    # 斜杠命令描述（Discord/聊天界面）
+    '"Start a new session."': '"开始新会话"',
+    '"Toggle elevated mode."': '"切换提权模式"',
+    '"Show reasoning steps."': '"显示推理步骤"',
+    '"Toggle verbose logging."': '"切换详细日志"',
+    '"Show status."': '"显示状态"',
+    '"Show help."': '"显示帮助"',
+
     # 动态拼接的描述（带变量）
     '`Global log level override for file + console (${CLI_LOG_LEVEL_VALUES})`': '"全局日志级别覆盖（silent|fatal|error|warn|info|debug|trace）"',
     '"Run, inspect, and query the WebSocket Gateway"': '"运行、检查和查询 WebSocket 网关"',
