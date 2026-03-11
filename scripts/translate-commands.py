@@ -15,7 +15,39 @@ from pathlib import Path
 
 # 英文 -> 中文 翻译映射
 TRANSLATIONS = {
-    # 命令描述
+    # CLI 主命令描述
+    '"Display help for command"': '"显示命令帮助"',
+    '"output the version number"': '"输出版本号"',
+    '"Non-interactive config helpers (get/set/unset/file/validate). Default: starts setup wizard."': '"非交互式配置助手（get/set/unset/file/validate）。默认：启动设置向导。"',
+    '"Non-interactive config helpers (get/set/unset/file/validate). Run without subcommand for the setup wizard."': '"非交互式配置助手（get/set/unset/file/validate）。不带子命令运行启动设置向导。"',
+    '"Configure wizard sections (repeatable). Use with no subcommand."': '"配置向导部分（可重复）。不带子命令使用。"',
+    '"Print the active config file path"': '"打印当前配置文件路径"',
+    '"Get a config value by dot path"': '"通过点路径获取配置值"',
+    '"Set a config value by dot path"': '"通过点路径设置配置值"',
+    '"Remove a config value by dot path"': '"通过点路径移除配置值"',
+    '"Validate the current config against the schema without starting the gateway"': '"验证配置文件，不启动网关"',
+    '"Manage connected chat channels (Telegram, Discord, etc.)"': '"管理聊天频道（Telegram、Discord 等）"',
+    '"Manage OpenClaw\'s dedicated browser (Chrome/Chromium)"': '"管理 OpenClaw 专用浏览器"',
+    '"Run one agent turn via the Gateway"': '"通过网关运行一个代理回合"',
+    '"Manage isolated agents (workspaces, auth, routing)"': '"管理隔离代理（工作区、认证、路由）"',
+    '"Generate shell completion script"': '"生成 Shell 补全脚本"',
+    '"Agent Control Protocol tools"': '"代理控制协议工具"',
+    '"Manage exec approvals (gateway or node host)"': '"管理执行审批（网关或节点主机）"',
+    '"Legacy clawbot command aliases"': '"旧版 clawbot 命令别名"',
+    '"Interactive setup wizard for credentials, channels, gateway, and agent defaults"': '"交互式设置向导"',
+    '"Manage cron jobs via the Gateway scheduler"': '"管理定时任务"',
+    '"Gateway service (legacy alias)"': '"网关服务（旧版别名）"',
+    '"Open the Control UI with your current token"': '"打开控制面板"',
+    '"Device pairing + token management"': '"设备配对和令牌管理"',
+    '"Lookup contact and group IDs (self, peers, groups) for supported chat channels"': '"查找联系人/群组 ID"',
+    '"DNS helpers for wide-area discovery (Tailscale + CoreDNS)"': '"DNS 发现助手（Tailscale + CoreDNS）"',
+    '"Search the live OpenClaw docs"': '"搜索 OpenClaw 文档"',
+    '"Health checks + quick fixes for the gateway and channels"': '"网关和频道健康检查"',
+    '"Run, inspect, and query the WebSocket Gateway"': '"运行、检查和查询 WebSocket 网关"',
+    '"Fetch health from the running gateway"': '"获取运行中网关的健康状态"',
+    '"Disable ANSI colors"': '"禁用 ANSI 颜色"',
+    
+    # plugin-sdk 命令描述
     '"Show or set config values."': '"显示或设置配置值。"',
     '"Set runtime debug overrides."': '"设置运行时调试覆盖。"',
     '"Set group activation mode."': '"设置群组激活模式。"',
@@ -75,9 +107,12 @@ TRANSLATIONS = {
 }
 
 def find_openclaw_dist():
-    """查找 OpenClaw 安装目录"""
+    """查找 OpenClaw 安装目录（支持 npm 和 bun）"""
     # 尝试常见的安装位置
     candidates = [
+        # bun 全局安装
+        os.path.expanduser("~/.bun/install/global/node_modules/openclaw/dist"),
+        # npm/nvm 安装
         os.path.expanduser("~/.nvm/versions/node/*/lib/node_modules/openclaw/dist"),
         "/usr/local/lib/node_modules/openclaw/dist",
         "/usr/lib/node_modules/openclaw/dist",
@@ -90,11 +125,18 @@ def find_openclaw_dist():
     
     return None
 
-def find_commands_registry(dist_path):
-    """查找 commands-registry JS 文件"""
-    pattern = os.path.join(dist_path, "commands-registry-*.js")
-    files = glob.glob(pattern)
-    return files
+def find_js_files(dist_path):
+    """查找所有需要翻译的 JS 文件"""
+    files = []
+    # dist/ 目录下的文件
+    for pattern in ["command-registry-*.js", "config-cli-*.js", "program*.js", "index.js"]:
+        files.extend(glob.glob(os.path.join(dist_path, pattern)))
+    # plugin-sdk 目录下的文件
+    sdk_path = os.path.join(dist_path, "plugin-sdk")
+    if os.path.exists(sdk_path):
+        for pattern in ["commands-registry-*.js"]:
+            files.extend(glob.glob(os.path.join(sdk_path, pattern)))
+    return sorted(set(files))
 
 def backup_file(filepath):
     """备份原文件"""
@@ -155,24 +197,24 @@ def main():
     
     print(f"📁 OpenClaw dist: {dist_path}")
     
-    # 查找 commands-registry 文件
-    registry_files = find_commands_registry(dist_path)
-    if not registry_files:
-        print("❌ 找不到 commands-registry-*.js 文件")
+    # 查找需要翻译的 JS 文件
+    js_files = find_js_files(dist_path)
+    if not js_files:
+        print("❌ 找不到需要翻译的 JS 文件")
         sys.exit(1)
     
-    print(f"📄 找到 {len(registry_files)} 个 registry 文件")
+    print(f"📄 找到 {len(js_files)} 个文件")
     
     if args.restore:
         # 恢复模式
-        for filepath in registry_files:
+        for filepath in js_files:
             restore_file(filepath)
         print("\n✓ 恢复完成")
         return
     
     # 翻译模式
     total_changes = 0
-    for filepath in registry_files:
+    for filepath in js_files:
         print(f"\n处理: {os.path.basename(filepath)}")
         
         if not args.dry_run:
