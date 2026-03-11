@@ -59,6 +59,46 @@ python3 scripts/upgrade-openclaw.py --check
 2. **自动备份**：首次运行会创建 `.backup` 文件
 3. **仅描述翻译**：命令名称（如 `/status`）保持不变
 
+## 维护指南
+
+### 添加新翻译
+
+当 OpenClaw 新增命令或发现遗漏时：
+
+1. 运行 `--dry-run` 检查遗漏：
+   ```bash
+   python3 scripts/translate-commands.py --dry-run
+   ```
+
+2. 如果有英文描述未翻译，编辑 `scripts/translate-commands.py` 中的 `TRANSLATIONS` 字典，添加：
+   ```python
+   '"English description"': '"中文描述"',
+   ```
+
+3. 重新运行汉化：
+   ```bash
+   python3 scripts/translate-commands.py
+   ```
+
+### 扫描范围
+
+脚本扫描以下文件：
+- `dist/command-registry-*.js` - 主命令注册
+- `dist/register*.js` - 子命令描述（重要！）
+- `dist/*-cli-*.js` - 各命令的 CLI 文件
+- `dist/program*.js` - 主程序
+- `dist/plugin-sdk/commands-registry-*.js` - 插件 SDK
+
+### 常见问题
+
+**Q: 汉化后仍有英文？**
+
+A: 描述可能在新文件中。检查 `openclaw --help` 输出，找到英文描述，然后在脚本中添加翻译。
+
+**Q: OpenClaw 升级后汉化失效？**
+
+A: 重新运行脚本即可。建议安装 post-upgrade hooks 实现自动化。
+
 ## 相关仓库
 
 - GitHub: https://github.com/qq980251986-hash/openclaw-cmd-cn
